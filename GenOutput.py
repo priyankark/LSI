@@ -1,6 +1,6 @@
 # for writing into a shape file
 from osgeo import ogr
-from GlobalValuesLib import *
+import GlobalValuesLib
 
 #for checking and deleting the file
 import os
@@ -21,6 +21,7 @@ def MakeShapeFile(ArrayOfLineSegmets,name) :
     if os.path.exists(shapefile_name):
         os.remove(shapefile_name)
     out_data_source = driver.CreateDataSource(shapefile_name)
+    GlobalValuesLib.SHP_location=shapefile_name
 
 
     # Create Layer

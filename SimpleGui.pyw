@@ -2,9 +2,13 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ExtractLine import *
-#from GlobalValuesLib import *
+from qgis.core import *
+from qgis.gui import *
+import GlobalValuesLib
+import geovis
+import os
 
-
+qgis_prefix = os.getenv("QGISHOME")
 class SimpleGui(QWidget):
 
     def __init__(self,parent=None):
@@ -18,7 +22,11 @@ class SimpleGui(QWidget):
        self.btnExtractLines=QPushButton("Extract")
        self.btnExtractLines.clicked.connect(lambda:self.handleExtract(self.viewStatus))
        self.btnSHP=QPushButton("View SHP")
-       self.btnSHP.clicked.connect(self.btnSHPFn)
+
+       self.canvas = QgsMapCanvas()
+       self.canvas.useImageToRender(False)
+       self.btnSHP.clicked.connect(lambda:self.btnSHPFn(self.canvas))
+
        selectionBar.addWidget(self.showSelection)
        selectionBar.addWidget(self.btnDXF)
        selectionBar.addWidget(self.btnExtractLines)
@@ -30,7 +38,9 @@ class SimpleGui(QWidget):
        mainLayout=QVBoxLayout()
        mainLayout.addWidget(selectionBarWidget)
        mainLayout.addWidget(self.viewStatus)
+       mainLayout.addWidget(self.canvas)
        mainLayout.addWidget(self.btnSHP)
+
        self.setLayout(mainLayout)
 
     def handleExtract(self,viewStatus):
@@ -49,12 +59,30 @@ class SimpleGui(QWidget):
             DXF_fileName=str(filename[0])
             print DXF_fileName
 
-    def btnSHPFn(self):
-        print "hello"
+    def btnSHPFn(self,canvas):
+
+        file=open(GlobalValuesLib.SHP_location,'r')
+        fileInfo = QFileInfo(GlobalValuesLib.SHP_location)
+        layer = QgsVectorLayer(GlobalValuesLib.SHP_location,"testlayer_shp","ogr")
+        if not layer.isValid():
+             print "Layer failed to load"
+        QgsMapLayerRegistry.instance().addMapLayer(layer);
+        canvas.setExtent(layer.extent())
+        cl = QgsMapCanvasLayer(layer)
+        layers = [cl]
+        canvas.setLayerSet(layers)
+
+
+
+
+        print GlobalValuesLib.SHP_location
+        #geovis.ViewShapefile(GlobalValuesLib.SHP_location)
 
 
 def main():
     app=QApplication(sys.argv)
+    QgsApplication.setPrefixPath("/usr", True)
+    QgsApplication.initQgis()
     QApplication.processEvents()
     simpleGUI=SimpleGui()
     simpleGUI.show()
