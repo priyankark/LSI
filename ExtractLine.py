@@ -30,7 +30,8 @@ def CanFormWallPair(ls1,ls2) :
     return True
 
 # The main function that takes input of a dxf file and Extracts the center line
-def convertSHP(FileName,viewStatus) :
+#def convertSHP(FileName,viewStatus) :
+def convertSHP(FileName) :
     #argument = sys.argv
     #if not (len(argument)==2) :
         #print "Usage: python ExtractLine.py Filename"
@@ -49,7 +50,8 @@ def convertSHP(FileName,viewStatus) :
         x2,y2,z2 = l.dxf.end
         ElineSegments.append(Segment(Point(x1,y1),Point(x2,y2)))
 
-    PrintLines(ElineSegments,viewStatus)
+    #PrintLines(ElineSegments,viewStatus)
+    PrintLines(ElineSegments)
     MakeShapeFile(ElineSegments,"Eline_new.shp")
 
     # For Storing wether the current line has already been paired or not
@@ -86,7 +88,7 @@ def convertSHP(FileName,viewStatus) :
                 j += 1
 
             print i," ==== ",PairIndex
-            viewStatus.append(str(i)+"==="+str(PairIndex))
+            #viewStatus.append(str(i)+"==="+str(PairIndex))
             # if the PairIndex has been found
             if PairIndex >= 0 :
                 # Mark that both the ith and PairIndex th line have been paired
@@ -109,14 +111,16 @@ def convertSHP(FileName,viewStatus) :
 
                 ElineSegmetsLen = len(ElineSegments)
         i += 1
-    viewStatus.append(str(i)+"==="+str(PairIndex))
-    PrintLines(ElineSegments,viewStatus)
+    #viewStatus.append(str(i)+"==="+str(PairIndex))
+    #PrintLines(ElineSegments,viewStatus)
+    PrintLines(ElineSegments)
     # MakeShapeFile(ElineSegments,"ss.shp")
     # print AssoCenterLine
 
     print "CenterLine before extension"
-    viewStatus.append("CenterLine before extension")
-    PrintLines(CenterLines,viewStatus)
+    #viewStatus.append("CenterLine before extension")
+    #PrintLines(CenterLines,viewStatus)
+    PrintLines(CenterLines)
     # for i in range(len(CenterLines)) :
     #     a,b = CenterLines[i].points
     #     print i , float(a.x) ,float(a.y) ,float(b.x) ,float(b.y)
@@ -137,8 +141,9 @@ def convertSHP(FileName,viewStatus) :
                 CenterLines[AssoCenterLine[i]],CenterLines[AssoCenterLine[j]] = JoinCenterLine(CenterLines[AssoCenterLine[i]],CenterLines[AssoCenterLine[j]])
 
     print "CenterLine after extension"
-    viewStatus.append("CenterLine after extension")
-    PrintLines(CenterLines,viewStatus)
+    #viewStatus.append("CenterLine after extension")
+    #PrintLines(CenterLines,viewStatus)
+    PrintLines(CenterLines)
     # writing into a shape file
     Name = FileName.split('.dxf')[0] + "_centerlines_after_extension.shp"
     MakeShapeFile(CenterLines,Name)
@@ -189,8 +194,9 @@ def convertSHP(FileName,viewStatus) :
                 NewCenterLines.append(Segment(SegmentedCL[i][j],SegmentedCL[i][j+1]))
 
     print "Segmented CenterLines"
-    viewStatus.append("Segmented CenterLines")
-    PrintLines(NewCenterLines,viewStatus)
+    #viewStatus.append("Segmented CenterLines")
+    #PrintLines(NewCenterLines,viewStatus)
+    PrintLines(NewCenterLines)
     # writing into a shape file
     Name = FileName.split('.dxf')[0] + "_segmentedCenterLines.shp"
     MakeShapeFile(NewCenterLines,Name)

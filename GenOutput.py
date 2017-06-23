@@ -44,11 +44,12 @@ def MakeShapeFile(ArrayOfLineSegmets,name) :
         feature.Destroy()
 
     out_data_source.Destroy()
-def PrintLines(Array,viewStatus) :
+#def PrintLines(Array,viewStatus) :
+def PrintLines(Array) :
     for i in range(len(Array)) :
         # if i == 4 or i == 5 :
             # print i , Array[i] , Array[i].slope
         a,b = Array[i].points
         print i , float(a.x) ,float(a.y) ,float(b.x) ,float(b.y)
         StringPrint=str(i)+' '+str(float(a.x))+' '+str(float(a.y)) +' '+str(float(b.x))+' '+str(float(b.y))+'\n'
-        viewStatus.append(StringPrint)
+        #viewStatus.append(StringPrint)

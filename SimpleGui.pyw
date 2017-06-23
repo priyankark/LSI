@@ -5,22 +5,39 @@ from ExtractLine import *
 from qgis.core import *
 from qgis.gui import *
 import GlobalValuesLib
-import geovis
 import os
+import threading
 
 qgis_prefix = os.getenv("QGISHOME")
+
+class MainExecutionThread(QThread):
+    def __init__(self):
+        QThread.__init__(self)
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        convertSHP(DXF_fileName)
+
+
+
+
+
 class SimpleGui(QWidget):
 
     def __init__(self,parent=None):
        super(SimpleGui,self).__init__(parent)
        self.setGeometry(65,50,500,500)
        selectionBar=QHBoxLayout()
+       self.mainExecutionThread=MainExecutionThread()
 
        self.btnDXF=QPushButton("Select .dxf file",self)
        self.showSelection=QLineEdit()
        self.btnDXF.clicked.connect(lambda:self.getfiles(self.showSelection))
        self.btnExtractLines=QPushButton("Extract")
-       self.btnExtractLines.clicked.connect(lambda:self.handleExtract(self.viewStatus))
+       #self.btnExtractLines.clicked.connect(lambda:self.handleExtract(self.viewStatus))
+       self.btnExtractLines.clicked.connect(lambda:self.handleExtract(self.mainExecutionThread))
        self.btnSHP=QPushButton("View SHP")
 
        self.canvas = QgsMapCanvas()
@@ -32,19 +49,22 @@ class SimpleGui(QWidget):
        selectionBar.addWidget(self.btnExtractLines)
        selectionBarWidget=QWidget()
        selectionBarWidget.setLayout(selectionBar)
-       self.viewStatus=QTextEdit()
+       #self.viewStatus=QTextEdit()
 
        #layout.addWidget(self.btnDFX)
        mainLayout=QVBoxLayout()
        mainLayout.addWidget(selectionBarWidget)
-       mainLayout.addWidget(self.viewStatus)
+       #mainLayout.addWidget(self.viewStatus)
        mainLayout.addWidget(self.canvas)
        mainLayout.addWidget(self.btnSHP)
 
        self.setLayout(mainLayout)
 
-    def handleExtract(self,viewStatus):
-        convertSHP(DXF_fileName,viewStatus)
+    #def handleExtract(self,viewStatus):
+    def handleExtract(self,mainExecutionThread):
+        #convertSHP(DXF_fileName,viewStatus)
+        mainExecutionThread.start()
+
 
     def getfiles(self,showSelection):
         dlg=QFileDialog()
